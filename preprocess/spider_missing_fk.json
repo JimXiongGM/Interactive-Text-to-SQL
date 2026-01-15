@@ -1,0 +1,74 @@
+{
+    "academic": {
+        "organization": {
+            "oid": "author.oid"
+        }
+    },
+    "baseball_1": {
+        "salary": {
+            "team_id": "team.team_id_br",
+            "player_id": "player.player_id"
+        }
+    },
+    "bike_1": {
+        "trip": {
+            "zip_code": "weather.zip_code",
+            "start_station_id": "station.id"
+        }
+    },
+    "company_1": {
+        "department": {
+            "dnumber": "dept_locations.dnumber"
+        }
+    },
+    "customers_card_transactions": {
+        "Customers": {
+            "customer_id": "Accounts.customer_id"
+        },
+        "Customers_cards": {
+            "customer_id": "Customers.customer_id"
+        }
+    },
+    "flight_2": {
+        "airlines": {
+            "uid": "flights.Airline"
+        }
+    },
+    "imdb": {
+        "movie": {
+            "mid": "cast.msid"
+        },
+        "tv_series": {
+            "sid": "cast.msid"
+        },
+        "classification": {
+            "msid": "movie.mid"
+        }
+    },
+    "musical": {
+        "actor": {
+            "Musical_ID": "musical.Musical_ID"
+        }
+    },
+    "product_catalog": {
+        "Catalog_Contents_Additional_Attributes": {
+            "attribute_id": "Attribute_Definitions.attribute_id"
+        }
+    },
+    "real_estate_rentals": {
+        "Users": {
+            "user_category_code": "Ref_User_Categories.user_category_code"
+        }
+    },
+    "scholar": {
+        "paperdataset": {
+            "datasetid": "dataset.datasetid",
+            "paperid": "paper.paperid"
+        }
+    },
+    "student_1": {
+        "list": {
+            "classroom": "teachers.classroom"
+        }
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "craftbeer": {
+        "breweries": "Breweries",
+        "beers": "Beers"
+    },
+    "app_store": {
+        "playstore": "googleplaystore",
+        "user_reviews": "googleplaystore_user_reviews"
+    },
+    "mondial_geo": {
+        "mergesWith": "mergeswith",
+        "mountainOnIsland": "mountainonisland"
+    },
+    "student_loan": {
+        "filed_for_bankrupcy": "filed_for_bankruptcy"
+    },
+    "world_development_indicators": {
+        "Footnotes": "FootNotes"
+    },
+    "coinmarketcap": {
+        "coins": "Coins",
+        "historical": "Historical"
+    },
+    "shooting": {
+        "incidents": "Incidents"
+    },
+    "card_games": {
+        "rulings": "ruling",
+        "set_translations": "set_transactions"
+    },
+    "student_club": {
+        "event": "Event",
+        "major": "Major",
+        "zip_code": "Zip_Code",
+        "attendance": "Attendance",
+        "budget": "Budget",
+        "expense": "Expense",
+        "income": "Income",
+        "member": "Member"
+    }
+}

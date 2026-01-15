@@ -1,0 +1,17 @@
+| Table | Primary Key | Foreign Key | Row Count |
+| --- | --- | --- | --- |
+| author | aid |  | 0 |
+| cite |  | citing references publication(pid), cited references publication(pid) | 0 |
+| conference | cid |  | 0 |
+| domain | did |  | 0 |
+| domain_author | did | did references domain(did), aid references author(aid) | 0 |
+| domain_conference | did | did references domain(did), cid references conference(cid) | 0 |
+| domain_journal | did | did references domain(did), jid references journal(jid) | 0 |
+| domain_keyword | did | did references domain(did), kid references keyword(kid) | 0 |
+| domain_publication | did | did references domain(did), pid references publication(pid) | 0 |
+| journal | jid |  | 0 |
+| keyword | kid |  | 0 |
+| organization | oid | oid references author(oid) | 0 |
+| publication | pid | cid references conference(cid), jid references journal(jid) | 0 |
+| publication_keyword | kid | kid references keyword(kid), pid references publication(pid) | 0 |
+| writes | aid | aid references author(aid), pid references publication(pid) | 0 |

@@ -1,0 +1,113 @@
+-- START --
+Q: Could you review our records in June 2022 and identify which countries have the longest streak of consecutive inserted city dates? Please list the 2-letter length country codes of these countries.
+Thought: First, I need to identify columns related to insert city dates. Then, I need to calculate the maximum number of consecutive insert dates. Finally, I need to find the 2-letter country codes and join them with the insert dates.
+Action: SearchColumn(["insert city date", "country code"])
+Observation: {'insert city date': [{'column': 'insert_date', 'format': 'TEXT', 'table': 'cities', 'statistics': 'text filed, example: 2023-04-08, 2023-05-31, 2022-11-01, 2022-06-22, 2021-03-15, 2021-03-22, 2021-05-02, 2023-05-18, 2023 ...'}, {'column': 'created_on', 'format': 'TEXT', 'table': 'cities_countries', 'statistics': "categorical field. ['2024-07-18']"}, {'column': 'city_name', 'format': 'TEXT', 'table': 'cities', 'statistics': 'text filed, example: rio de janeiro, tianjin, buenos aires, cairo, taipei, chennai, tongshan, beijing, chengdu, manila, s ...'}, {'column': 'city_id', 'format': 'INTEGER', 'table': 'cities', 'statistics': 'min: 1, max: 44622. distinct count: 44622'}, {'column': 'region', 'format': 'TEXT', 'table': 'cities_countries', 'statistics': "categorical field. ['asia', 'europe', 'africa', 'oceania', 'americas', 'antartica']"}], 'country code': [{'column': 'country_code_2', 'format': 'TEXT', 'table': 'cities_countries', 'statistics': 'text filed, example: br, aq, ba, cf, aw, ai, bf, at, bb, af, kh, bq, td, bo, cv, bs, cm, cg, as, bn, cc, ca, ky, km, cn,  ...'}, {'column': 'country_code_3', 'format': 'TEXT', 'table': 'cities_countries', 'statistics': 'text filed, example: asm, cyp, bvt, bes, cpv, bhr, cmr, cck, abw, dza, bfa, chl, bgr, atg, brn, brb, aia, bol, bhs, bdi,  ...'}, {'column': 'country_code_2', 'format': 'TEXT', 'table': 'cities', 'statistics': 'text filed, example: br, so, iq, ae, mm, sa, af, bo, mx, sd, ru, jp, vn, fr, ca, dz, cn, ph, in, hk, th, gh, ar, ao, de,  ...'}, {'column': 'country_code_2', 'format': 'TEXT', 'table': 'cities_languages', 'statistics': 'text filed, example: br, ba, cf, aw, ai, bf, at, bb, af, kh, bq, td, bo, cv, bs, vg, cm, cg, as, bn, cc, ca, ky, ck, km,  ...'}, {'column': 'country_code_2', 'format': 'TEXT', 'table': 'cities_currencies', 'statistics': 'text filed, example: br, ba, cf, aw, cr, ai, bf, at, bb, af, kh, td, bo, cv, bs, cm, cg, as, bn, cc, ca, ky, ck, km, cn,  ...'}]}
+Thought: The columns insert_date and country_code_2 in the cities table are what we need. Let's examine the cities table structure.
+Action: SearchColumn("", table="cities")
+Observation: Head info of table `cities`: 
+| city_id | city_name | latitude | longitude | country_code_2 | capital | population | insert_date |
+|---|---|---|---|---|---|---|---|
+| 1 | tokyo | 139.6922 | 35.6897 | jp | 1 | 37732000.0 | 2022-01-12 |
+| 2 | jakarta | 106.8275 | -6.175 | id | 1 | 33756000.0 | 2021-08-22 |
+| 3 | delhi | 77.23 | 28.61 | in | 0 | 32226000.0 | 2021-03-11 |
+Thought: Now we need to process the insert_date field to find records from June 2022 and calculate consecutive insert days. The basic approach for finding consecutive dates is: 1. Remove duplicates 2. Calculate the difference between dates and ROW_NUMBER() 3. Count consecutive dates for each country and rank them, then select the maximum.
+Action: ExecuteSQL("""
+-- Step 1: Get unique daily insert records for each country
+WITH get_dates AS (
+  SELECT
+    insert_date,
+    country_code_2
+  FROM (
+    SELECT
+      insert_date,
+      country_code_2,
+      
+      /* This SQL statement:
+         1. ROW_NUMBER() assigns a sequence number to each row
+         2. PARTITION BY insert_date, country_code_2 groups by insert date and country code
+         3. ORDER BY insert_date orders within each group by insert date
+         4. AS row_num names the result as row_num
+         
+         Purpose: Deduplication - keeping only the first record for each date and country using WHERE row_num = 1 */
+      ROW_NUMBER() OVER (PARTITION BY insert_date, country_code_2 ORDER BY insert_date) AS row_num
+
+    FROM
+      cities
+    WHERE
+      insert_date BETWEEN '2022-06-01' AND '2022-06-30'
+  )
+  WHERE row_num = 1
+),
+
+-- Step 2: Calculate date differences to identify consecutive dates
+get_diff AS (
+  SELECT
+    country_code_2,
+    insert_date,
+    /* This code identifies consecutive dates:
+       1. strftime('%d', insert_date) extracts the day from the date
+       2. CAST(...AS INTEGER) converts the day to an integer
+       3. ROW_NUMBER() assigns sequence numbers for each country's dates (1,2,3...)
+       4. The difference (diff) remains constant for consecutive dates
+       This allows us to identify sequences of consecutive dates */
+    CAST(strftime('%d', insert_date) AS INTEGER) - ROW_NUMBER() OVER (PARTITION BY country_code_2 ORDER BY insert_date) AS diff
+  FROM (
+    SELECT
+      country_code_2,
+      insert_date,
+      ROW_NUMBER() OVER (PARTITION BY country_code_2 ORDER BY insert_date) AS row_num
+    FROM
+      get_dates
+  )
+),
+
+-- Step 3: Count consecutive dates for each country
+get_diff_count AS (
+  SELECT
+    country_code_2,
+    insert_date,
+    COUNT(*) OVER (PARTITION BY country_code_2, diff) AS diff_count
+  FROM
+    get_diff
+),
+
+-- Step 4: Rank countries by their consecutive date counts
+get_rank AS (
+  SELECT
+    country_code_2,
+    DENSE_RANK() OVER (PARTITION BY country_code_2 ORDER BY diff_count DESC) AS rnk,
+    insert_date
+  FROM
+    get_diff_count
+),
+
+-- Step 5: Count the number of consecutive date groups for each country
+count_rank AS(
+  SELECT
+  country_code_2,
+  COUNT(rnk) AS diff_count
+  FROM
+  get_rank
+  GROUP BY 
+  country_code_2,
+  rnk
+)
+
+-- Finally: Select country codes with the longest consecutive date streak
+SELECT
+  country_code_2 AS country
+FROM
+  count_rank
+WHERE
+  diff_count = (
+  SELECT
+      MAX(diff_count)
+    FROM
+      count_rank
+  );
+""")
+Observation: [('br',), ('in',), ('us',)]
+Thought: That is the answer.
+Action: Done.
+

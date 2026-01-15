@@ -1,0 +1,54 @@
+{
+    "question": "How many U.S. publications related to IoT (where the abstract includes the phrase 'internet of things') were filed each month from 2008 to 2022, including months with no filings?",
+    "external_knowledge": null,
+    "id": "sf_bq033",
+    "db_id": "PATENTS"
+},
+
+WITH RECURSIVE Date_Series_Table AS (
+    SELECT DATE '2008-01-01' AS day
+    UNION ALL
+    SELECT DATEADD(day, 1, day)
+    FROM Date_Series_Table
+    WHERE day < DATE '2022-12-31'
+),
+
+Patent_Matches_Raw AS (
+    SELECT
+      "application_number" AS Patent_Application_Number,
+      TRY_TO_DATE(TRIM("filing_date"), 'YYYYMMDD') AS Patent_Filing_Date,
+      abstract_info.value:text AS Patent_Title,
+      abstract_info.value:language AS Patent_Title_Language
+    FROM
+      PATENTS.publications AS patentsdb,
+      LATERAL FLATTEN(input => "abstract_localized") AS abstract_info
+    WHERE
+      LOWER(abstract_info.value:text) LIKE '%internet of things%'
+      AND "country_code" = 'US'
+),
+
+Patent_Matches AS (
+    SELECT
+      Patent_Filing_Date,
+      Patent_Application_Number,
+      MAX(Patent_Title) AS Patent_Title,
+      MAX(Patent_Title_Language) AS Patent_Title_Language
+    FROM
+      Patent_Matches_Raw
+    WHERE
+      Patent_Filing_Date IS NOT NULL  -- Ensuring date is valid
+    GROUP BY
+      Patent_Application_Number, Patent_Filing_Date
+)
+
+SELECT
+  TO_CHAR(Date_Series_Table.day, 'YYYY-MM') AS Patent_Date_YearMonth,
+  COUNT(Patent_Matches.Patent_Application_Number) AS Number_of_Patent_Applications
+FROM
+  Date_Series_Table
+  LEFT JOIN Patent_Matches
+    ON Date_Series_Table.day = Patent_Matches.Patent_Filing_Date
+GROUP BY
+  Patent_Date_YearMonth
+ORDER BY
+  Patent_Date_YearMonth;

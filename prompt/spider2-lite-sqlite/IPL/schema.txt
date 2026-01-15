@@ -1,0 +1,10 @@
+| Table | Primary Key | Foreign Key | Row Count | Column Count |
+| --- | --- | --- | --- | --- |
+| ball_by_ball | match_id |  | 134703 | 10 |
+| batsman_scored | match_id |  | 131259 | 5 |
+| extra_runs | match_id |  | 7349 | 6 |
+| match | match_id |  | 567 | 13 |
+| player | player_id |  | 468 | 6 |
+| player_match | match_id |  | 12495 | 4 |
+| team | team_id |  | 12 | 2 |
+| wicket_taken | match_id |  | 6618 | 6 |

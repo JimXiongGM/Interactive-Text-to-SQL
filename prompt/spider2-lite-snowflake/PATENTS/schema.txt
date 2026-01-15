@@ -1,0 +1,6 @@
+Schema of database PATENTS:
+| Schema | Table | Primary Key | Foreign Key | Row Count | Column Count |
+| --- | --- | --- | --- | --- | --- |
+| PATENTS | CPC_DEFINITION |  |  | 260808 | 22 |
+| PATENTS | DISCLOSURES_13 |  |  | 45349 | 20 |
+| PATENTS | PUBLICATIONS |  |  | 516775 | 37 |

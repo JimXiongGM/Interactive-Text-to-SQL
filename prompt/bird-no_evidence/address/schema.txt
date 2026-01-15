@@ -1,0 +1,11 @@
+| Table | Primary Key | Foreign Key | Row Count |
+| --- | --- | --- | --- |
+| CBSA | CBSA |  | 465 |
+| alias | zip_code | zip_code references zip_data(zip_code) | 41701 |
+| area_code | zip_code | zip_code references zip_data(zip_code) | 53796 |
+| avoid | zip_code | zip_code references zip_data(zip_code) | 24114 |
+| congress | cognress_rep_id | abbreviation references state(abbreviation) | 540 |
+| country | zip_code | state references state(abbreviation), zip_code references zip_data(zip_code) | 51001 |
+| state | abbreviation |  | 62 |
+| zip_congress | zip_code | zip_code references zip_data(zip_code), district references congress(cognress_rep_id) | 45231 |
+| zip_data | zip_code | CBSA references CBSA(CBSA), state references state(abbreviation) | 41563 |

@@ -1,0 +1,17 @@
+| Table | Primary Key | Foreign Key | Row Count | Column Count |
+| --- | --- | --- | --- | --- |
+| alien_data |  |  | 50000 | 16 |
+| aliens |  |  | 50000 | 7 |
+| aliens_details |  |  | 50000 | 4 |
+| aliens_location |  |  | 50000 | 5 |
+| cities |  |  | 44622 | 8 |
+| cities_countries |  |  | 241 | 8 |
+| cities_currencies |  |  | 254 | 4 |
+| cities_languages |  |  | 608 | 3 |
+| job_company |  |  | 14003 | 5 |
+| job_postings_fact |  |  | 78769 | 16 |
+| legislation_date_dim |  |  | 30315 | 3 |
+| legislators |  |  | 12518 | 29 |
+| legislators_terms |  |  | 44063 | 20 |
+| skills_dim |  |  | 26 | 3 |
+| skills_job_dim |  |  | 366960 | 2 |

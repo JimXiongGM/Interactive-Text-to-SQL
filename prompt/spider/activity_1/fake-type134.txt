@@ -1,0 +1,24 @@
+# {
+#     "db_id": "activity_1",
+#     "question": "Which female students and male professors participated in the Soccer activity? List their names.",
+#     "id": "fake-01",
+# }
+# From Spider-DK
+Q: Which female students and male professors participated in the Soccer activity? List their names.
+Thought: According to the general process, 1. I need to find the cell value about "Soccer activity". 2. I need to find the column means "female student", "student name", "male professor", and "professor name".
+Action: SearchValue("Soccer activity")
+Observation: [{'contents': 'Soccer', 'table': 'Activity', 'column': 'activity_name'}]
+Thought: I have found the cell "Soccer" in the column Activity.activity_name. Next, I need to find columns.
+Action: SearchColumn(["female student", "male professor", "name"])
+Observation: {'female student': [{'column': 'Sex', 'format': 'VARCHAR(1)', 'table': 'Student', 'statistics': "categorical field. ['F', 'M']"}, {'column': 'Sex', 'format': 'VARCHAR(1)', 'table': 'Faculty', 'statistics': "categorical field. ['M', 'F']"}], 'male professor': [{'column': 'Sex', 'format': 'VARCHAR(1)', 'table': 'Faculty', 'statistics': "categorical field. ['M', 'F']"}, {'column': 'Sex', 'format': 'VARCHAR(1)', 'table': 'Student', 'statistics': "categorical field. ['F', 'M']"}, {'column': 'Rank', 'format': 'VARCHAR(15)', 'table': 'Faculty', 'statistics': "categorical field. ['Instructor', 'Professor', 'AssocProf', 'AsstProf']"}], 'name': [{'column': 'activity_name', 'format': 'varchar(25)', 'table': 'Activity', 'statistics': "categorical field. ['Mountain Climbing', 'Canoeing', 'Kayaking', 'Spelunking', 'Extreme Canasta', 'Soccer', 'Baseball', 'Accordion Ensemble', 'Football', 'Volleyball', 'Canasta', 'Chess', 'Crossword Puzzles', 'Proselytizing', 'Square Dancing', 'Bungee Jumping']"}, {'column': 'Lname', 'format': 'VARCHAR(15)', 'table': 'Faculty', 'statistics': 'text filed. e.g. Kumar, Goldman, Cauwenberghs, Salzberg, Brody, Byrne, Giuliano, Houlahan, Taylor, Cowen, Hughes, Wie ...'}]}
+Thought: The column Student.Sex is used to identify female student. The column Faculty.Sex and the value "Professor" in the column Faculty.Rank are used to identify male professor. The column Faculty.Lname is about names. I need to check if there are more columns about name.
+Action: SearchColumn("first name/last name")
+Observation: [{'column': 'Lname', 'format': 'VARCHAR(15)', 'table': 'Faculty', 'statistics': 'text filed. e.g. Kumar, Goldman, Cauwenberghs, ...'}, {'column': 'LName', 'format': 'VARCHAR(12)', 'table': 'Student', 'statistics': "categorical field. ['Smith', 'Kim', 'Jones', 'Kumar', 'Gompers', 'Schultz', ...]"}, {'column': 'Fname', 'format': 'VARCHAR(15)', 'table': 'Faculty', 'statistics': 'text filed. e.g. Baruch, Paul, Brian, Carey, William, Alexander, Subodh, Russell, Jacob, Michael, James, Daniel, Eric ...'}, {'column': 'Fname', 'format': 'VARCHAR(12)', 'table': 'Student', 'statistics': "categorical field. ['Linda', 'Tracy', 'Shiela', ...']"}]
+Thought: The "Lname" column and the "Fname" column in the "Faculty" table are about names. The "LName" column and the "Fname" column in the "Student" table are about names. To summarize, the columns need to be selected are [Student.Fname, Faculty.Fname], the columns need to be filtered are [Activity.activity_name].
+Action: FindShortestPath(start=["Student.Fname", "Faculty.Fname"], end="Activity.activity_name")
+Observation: [('Faculty.Fname', 'Activity.activity_name', 'Faculty.Fname <-> Faculty_Participates_in.FacID = Faculty.FacID <-> Faculty_Participates_in.actid = Activity.actid <-> Activity.activity_name'), ('Student.Fname', 'Activity.activity_name', 'Student.Fname <-> Participates_in.StuID = Student.stuid <-> Participates_in.actid = Activity.actid <-> Activity.activity_name')]
+Thought: Now, I can structure the complete SQL query.
+Action: ExecuteSQL("SELECT Student.Fname, Student.Lname, Faculty.Fname, Faculty.Lname FROM Student JOIN Participates_in ON Student.stuid = Participates_in.StuID JOIN Activity ON Participates_in.actid = Activity.actid JOIN Faculty_Participates_in ON Faculty_Participates_in.actid = Activity.actid JOIN Faculty ON Faculty_Participates_in.FacID = Faculty.FacID WHERE Student.Sex = 'F' AND Faculty.Sex = 'M' AND Faculty.Rank = 'Professor' AND Activity.activity_name = 'Soccer'")
+Observation: [('Linda', 'Smith', 'Michael', 'Goodrich'), ('Sarah', 'Schmidt', 'Michael', 'Goodrich'), ('Stacy', 'Prater', 'Michael', 'Goodrich')]
+Thought: The SQL query is complete.
+Action: Done
