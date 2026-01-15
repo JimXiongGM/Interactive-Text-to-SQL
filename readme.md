@@ -199,4 +199,24 @@ git clone https://github.com/niklaswretblad/the-effects-of-noise-in-text-to-SQL.
 cd Interactive-Text-to-SQL-publish
 ```
 
+## Citation
 
+```bibtex
+@inproceedings{10.1145/3746252.3761052,
+  author = {Xiong, Guanming and Bao, Junwei and Jiang, Hongfei and Song, Yang and Zhao, Wen},
+  title = {Multi-Turn Interactions for Text-to-SQL with Large Language Models},
+  year = {2025},
+  isbn = {9798400720406},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3746252.3761052},
+  doi = {10.1145/3746252.3761052},
+  abstract = {This study explores text-to-SQL parsing by leveraging the powerful reasoning capabilities of large language models (LLMs). Despite recent advancements, existing LLM-based methods are still inefficient and struggle to handle cases with wide tables effectively. Furthermore, current interaction-based approaches either lack a step-by-step, interpretable SQL generation process or fail to provide a universally applicable interaction design. To address these challenges, we introduce Interactive-T2S, a framework that generates SQL queries through direct interactions with databases. This framework includes four general tools that facilitate proactive and efficient information retrieval by the LLM. Additionally, we have developed detailed exemplars to demonstrate the step-wise reasoning processes within our framework. Our approach achieves advanced performance on the Spider and BIRD datasets as well as their variants. Notably, we obtain state-of-the-art results on the BIRD leaderboard under the setting without oracle knowledge, demonstrating the effectiveness of our method. Code and data are available at: https://github.com/JimXiongGM/Interactive-Text-to-SQL.},
+  booktitle = {Proceedings of the 34th ACM International Conference on Information and Knowledge Management},
+  pages = {3560–3570},
+  numpages = {11},
+  keywords = {large language model, low-resource, text-to-sql},
+  location = {Seoul, Republic of Korea},
+  series = {CIKM '25}
+}
+```
